@@ -54,3 +54,33 @@ app.component('blog-post', {
 
 app.mount('#blog-posts-events-demo')
 ```
+
+#### イベントを特定の値と一緒にディスッパッチしたい場合
+
+`$emit` の第二引数と `$event` を使う。
+
+```html
+<blog-post ... @enlarge-text="postFontSize += $event"></blog-post>
+```
+
+```js
+<button @click="$emit('enlargeText', 0.1)">
+  Enlarge text
+</button>
+```
+
+#### イベントハンドラがメソッドの場合
+
+値は子コンポーネントで定義されたそのメソッドの、第一引数として渡される。
+
+```html
+<blog-post ... @enlarge-text="onEnlargeText"></blog-post>
+```
+
+```js
+methods: {
+  onEnlargeText(enlargeAmount) {
+    this.postFontSize += enlargeAmount
+  }
+}
+```
