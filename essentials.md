@@ -418,7 +418,113 @@ const vm = Vue.createApp({
 
 ## 条件付きレンダリング
 
+### `v-if` と `v-show`
+
+* `v-show`
+  * 要素は常に描画されて DOM に維持される。
+  * 要素の `display` CSSプロパティを切り替える。
+* とても頻繁に何かを切り替える必要があれば `v-show` を選び、条件が実行時に変更することがほとんどない場合は、 `v-if` を選ぶ。
+
 ## リストレンダリング
+
+### オブジェクトの `v-for`
+
+```html
+<li v-for="(value, name, index) in myObject">
+ {{ index }}. {{ name }}: {{ value }}
+</li>
+<!--
+以下のように描画される。
+・ 0. title: How to do lists in Vue
+・ 1. author: Jane Doe
+・ 2. publishedAt: 2016-04-10
+-->
+```
+
+```js
+Vue.createApp({
+  data() {
+    myObject: {
+      title: 'How to do lists in Vue',
+      author: 'Jane Doe',
+      publishedAt: '2016-04-10'
+    }
+  }
+}).mount('#v-for-object')
+```
+
+### コンポーネントと `v-for`
+
+* 繰り返されたデータをコンポーネントに渡すには、プロパティ(以下の例では `title`)を渡す必要がある。
+
+```html
+<div id="todo-list-example">
+ <form v-on:submit.prevent="addNewTodo">
+  <label for="new-todo">Add a todo</label>
+  <input
+    v-model="newTodoText"
+    id="new-todo"
+    placeholder="E.g. Feed the cat"
+  />
+  <button>Add</button>
+ </form>
+ <ul>
+   <todo-item
+     v-for="(todo, index) in todos"
+     :key="todo.id"
+     :title="todo.title"
+     @remove="todos.splice(index, 1)"
+   ></todo-item>
+ </ul>
+</div>
+```
+
+```js
+const app = Vue.createApp({
+  data() {
+    return {
+      newTodoText: '',
+      todos: [
+        {
+          id: 1,
+          title: 'Do the dishes'
+        },
+        {
+          id: 2,
+          title: 'Take out the trash'
+        },
+        {
+          id: 3,
+          title: 'Mow the lawn'
+        }
+      ],
+      nextTodoId: 4
+    }
+  },
+  methods: {
+    addNewTodo() {
+      this.todos.push({
+        id: this.nextTodoId++,
+        title: this.newTodoText
+      })
+      this.newTodoText = ''
+    }
+  }
+})
+
+app.component('todo-item', {
+  template: `
+    <li>
+      {{ title }}
+      <button @click="$emit('remove')">Remove</button>
+    </li>
+  `,
+  props: ['title'],
+  emits: ['remove']
+})
+
+app.mount('#todo-list-example')
+```
 
 ## イベントハンドリング
 
