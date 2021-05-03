@@ -281,10 +281,140 @@ vm.increment()
 console.log(vm.count) // => 5
 ```
 
-
 ## 算出プロパティとウォッチャ
 
+### 算出プロパティ vs メソッド
+
+* 算出プロパティはリアクティブな依存関係に基づいてキャッシュされる。
+  * リアクティブな依存関係の一部が変更された場合にのみ再評価される。
+* メソッドは、再レンダリングが起こるたびに常に関数を実行する。
+
+### 算出 Setter 関数
+
+* 以下の状態では、 `vm.fullName = 'John Doe` を実行すると setter 関数が呼び出され、その結果 `vm.firstName` と `vm.lastName` が更新される。
+
+```js
+// ...
+computed: {
+  fullName: {
+    // getter 関数
+    get() {
+      return this.firstName + ' ' + this.lastName
+    },
+    // setter 関数
+    set(newValue) {
+      const names = newValue.split(' ')
+      this.firstName = names[0]
+      this.lastName = names[names.length - 1]
+    }
+  }
+}
+// ...
+```
+
+### ウォッチャ
+
+* `watch` オブション
+  * データを変更するのに応じて非同期処理や重い処理を実行したい場合に最も便利。
+
+```html
+<div id="watch-example">
+ <p>
+   Ask a yes/no question:
+   <input v-model="question" />
+ </p>
+</div>
+```
+
+```js
+<!-- ajax ライブラリや汎用ユーティリティメソッドのコレクションなどの -->
+<!-- 豊富なエコシステムが既に存在するため、それらを再発明しないことで -->
+<!-- Vue のコアは小規模なまま保たれています。これは、使い慣れたものを -->
+<!-- 自由に使うことができる、ということでもあります。 -->
+<script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
+<script>
+  const watchExampleVM = Vue.createApp({
+    data() {
+      return {
+        question: '',
+        answer: 'Questions usually contain a question mark. ;-)'
+      }
+    },
+    watch: {
+      // question が変わるたびに、この関数が実行される
+      question(newQuestion, oldQuestion) {
+        if (newQuestion.indexOf('?') > -1) {
+          this.getAnswer()
+        }
+      }
+    },
+    methods: {
+      getAnswer() {
+        this.answer = 'Thinking...'
+        axios
+          .get('https://yesno.wtf/api')
+          .then(response => {
+            this.answer = response.data.answer
+          })
+          .catch(error => {
+            this.answer = 'Error! Could not reach the API.' + error
+          })
+      }
+    }
+  }).mount('#watch-example')
+</script>
+```
+
+### 算出プロパティ(computed) vs 監視プロパティ(watch)
+
+* 他のデータに基づいて変更しなければならないデータがある場合、`watch` を使いすぎてしまいがちだが、たいていの場合は算出プロパティを使うのがベター。
+
+```html
+<div id="demo">{{ fullName }}</div>
+```
+
+```js
+// 監視プロパティを使った場合
+const vm = Vue.createApp({
+  data() {
+    return {
+      firstName: 'Foo',
+      lastName: 'Bar',
+      fullName: 'Foo Bar'
+    }
+  },
+  watch: {
+    firstName(val) {
+      this.fullName = val + ' ' + this.lastName
+    },
+    lastName(val) {
+      this.fullName = this.firstName + ' ' + val
+    }
+  }
+}).mount('#demo')
+
+// 算出プロパティを使った場合
+const vm = Vue.createApp({
+  data() {
+    return {
+      firstName: 'Foo',
+      lastName: 'Bar'
+    }
+  },
+  computed: {
+    fullName() {
+      return this.firstName + ' ' + this.lastName
+    }
+  }
+}).mount('#demo')
+```
+
 ## クラスとスタイルのバインディング
+
+* `:class`
+  * クラスを動的に切り替えることができる
+* `:style`
+  * 要素のスタイルを動的に切り替えることができる
 
 ## 条件付きレンダリング
 
@@ -304,7 +434,6 @@ console.log(vm.count) // => 5
 
 * `v-bind` ディレクティブ
   * input 値に文字列(チェックボックスなら boolean)以外の値を束縛することができるようになる
-
 
 ## コンポーネントの基本
 
