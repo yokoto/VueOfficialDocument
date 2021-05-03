@@ -178,8 +178,7 @@ Vue.createApp({
 
 ### ライフサイクルダイアグラム
 
-<img width="599" alt="スクリーンショット 2021-05-03 18 51 01" src="https://user-images.githubusercontent.com/6859224/116862977-8be72d80-ac40-11eb-808e-08c8719115b0.png">
-
+<img width="501" alt="スクリーンショット 2021-05-03 18 52 37" src="https://user-images.githubusercontent.com/6859224/116863120-c5b83400-ac40-11eb-9a7a-3114ba13a04f.png">
 
 
 ## テンプレート構文
