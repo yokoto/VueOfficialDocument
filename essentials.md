@@ -1,6 +1,5 @@
 # 基本的な使い方
 
-
 ## はじめに
 
 ### Vue.js とは？
@@ -10,11 +9,12 @@
 
 ### 宣言的レンダリング
 
-* Vue.js のコアは、単純なテンプレート構文を使って宣言的にDOMにレンダリングすることを可能にするシステム。
-* 要素の属性を束縛（バインディング）することもできる。
- * `v-bind` 属性はディレクティブと呼ばれる。
-  * ディレクティブは Vue によって提供された特別な属性であることを示すために `v-` 接頭辞がついている。
-  * レンダリングされたDOMに特定のリアクティブな振る舞いを与える。
+* Vue.js は、単純なテンプレート構文を使って宣言的にDOMにレンダリングする。
+* 要素の属性の束縛 = バインディング。
+* ディレクティブ
+  * Vue によって提供された特別な属性
+  * `v-` 接頭辞がついている
+  * レンダリングされたDOMに特定のリアクティブな振る舞いを与える
 
 ```html
 <div id="bind-attribute">
@@ -68,187 +68,145 @@ const EventHandling = {
 Vue.createApp(EventHandling).mount('#event-handling')
 ```
 
+### コンポーネントによる構成
+
+- ほぼすべてのタイプのアプリケーションインターフェイスは、コンポーネントツリーとして抽象化できる。
+
+```html
+<div id="todo-list-app">
+  <ol>
+   <!--
+    todo-item コンポーネントのインスタンスを生成する
+
+    各 todo-itemにその内容を表す todo オブジェクトを指定することで、
+    内容が動的に変化します。後述する "key" も
+    各コンポーネントに指定する必要があります。
+   -->
+   <todo-item
+    v-for="item in groceryList"
+    v-bind:todo="item"
+    v-bind:key="item.id"
+   ></todo-item>
+  </ol>
+</div>
+```
+
+```js
+const TodoList = {
+  data() {
+    return {
+      groceryList: [
+        { id: 0, text: 'Vegetables' },
+        { id: 1, text: 'Cheese' },
+        { id: 2, text: 'Whatever else humans are supposed to eat' }
+      ]
+    }
+  }
+}
+
+// アプリケーションインスタンスの生成
+const app = Vue.createApp(TodoList)
+
+// 新しいコンポーネントの定義
+app.component('todo-item', {
+  props: ['todo'],
+  template: `<li>{{ todo.text }}</li>`
+})
+
+// アプリケーションのマウント
+app.mount('#todo-list-app')
+```
+
+## アプリケーションインスタンス
+
+### インスタンスの作成
+
+* `createApp` 関数
+  * 新しいアプリケーションインスタンスを作成する。
+  * すべての Vue アプリケーションはここから始まる。
+* `mount` メソッド
+  * アプリケーションインスタンスをコンテナ( `<div id="app"></div>` など)にマウントできる。
+
+```js
+Vue.createApp(/* options */).mount('#app')
+```
+
+* Vue の設計は MVVM パターンに影響を受けているため、インスタンスを参照するのに変数 `vm` (ViewModelの短縮形) を使用する。
+* Vue アプリケーションは、 `createApp` で作られたひとつのルートインスタンスと、入れ子になった再利用可能なコンポーネントのツリーから成る。
+
+```
+Root Instance
+└─ TodoList
+   ├─ TodoItem
+   │  ├─ DeleteTodoButton
+   │  └─ EditTodoButton
+   └─ TodoListFooter
+      ├─ ClearTodosButton
+      └─ TodoListStatistics
+```
+
+### データとメソッド
+
+* `data` プロパティ
+  * `data` で見つけられる全てのプロパティは、Vue のリアクティブシステムに追加される。
+  * `data` のプロパティが変更されると、ビューは反応(react)し、再レンダリングされる。
+  * `data` のプロパティは、インスタンス作成時に存在した場合にのみリアクティブである。 = 何らかの初期値が必要。
+
+### インスタンスライフサイクルフック
+
+* それぞれのインスタンスは、作成時に連の初期化の手順を踏む。
+* インスタンスは、特定の段階にコードを追加する機会をユーザに与えるために、ライフサイクルフックと呼ばれる関数を実行する。
+* 全てのライフサイクルフックは、呼び出し元である現在アクティブなインスタンスを指す `this` コンテキストとともに呼ばれる。
+  * アロー関数は `this` を持たないため、ライフサイクルフックの定義に使用しないこと。
+
+* `created` フック
+  * インスタンスの作成後にコードを実行するために使用できる。
+
+```js
+Vue.createApp({
+  data() {
+    return {
+      a: 1
+    }
+  },
+  created() {
+    // `this` は vm インスタンスを指します
+    console.log('a is: ' + this.a) // => "a is: 1"
+  }
+})
+```
+
+### ライフサイクルダイアグラム
+
+<img width="599" alt="スクリーンショット 2021-05-03 18 51 01" src="https://user-images.githubusercontent.com/6859224/116862977-8be72d80-ac40-11eb-808e-08c8719115b0.png">
+
+
+
+## テンプレート構文
+
+## 算出プロパティとウォッチャ
+
 ## クラスとスタイルのバインディング
 
+## 条件付きレンダリング
 
+## リストレンダリング
+
+## イベントハンドリング
 
 ## フォーム入力バインディング
 
 ### 基本的な使い方(v-model)
 
-* form 要素( `input` , `textarea` , `select` )に双方向(two-way)データバインディングを作成するには、  
-`v-model` ディレクティブを使用することができる。
-* `v-model` ディレクティブは、内部的に input 要素に応じて異なるプロパティを使用し、異なるイベントを `emit` する。  
-  * テキストと複数行テキストは、`value` プロパティと `input` イベントを使用する。
-  * チェックボックスとラジオボタンは、 `checked` プロパティと `change` イベントを使用する。
-  * 選択フィールドは、 `value` プロパティと `change` イベントを使用する。
-
-#### テキスト
-
-```html
-<input v-model="message" placeholder="edit me">
-<p>Message is: {{ message }}</p>
-```
-
-#### 複数行テキスト
-
-```html
-<span>Multiline message is:</span>
-<p style="white-space: pre-line;">{{ message }}</p>
-<br>
-<!-- textarea への挿入 (<textarea>{{text}}</textarea>) は動かない。 -->
-<textarea v-model="message" placeholder="add multiple lines"></textarea>
-```
-
-#### チェックボックス
-
-```html
-<!-- 単体のチェックボックスは boolean 値 -->
-<input type="checkbox" id="checkbox" v-model="checked">
-<label for="checkbox">{{ checked }}</label>
-```
-
-```html
-<!-- 複数のチェックボックスは同じ配列に束縛する -->
-<input type="checkbox" id="jack" value="Jack" v-model="checkedNames">
-<label for="jack">Jack</label>
-<input type="checkbox" id="john" value="John" v-model="checkedNames">
-<label for="john">John</label>
-<input type="checkbox" id="mike" value="Mike" v-model="checkedNames">
-<label for="mike">Mike</label>
-<br>
-<span>Checked names: {{ checkedNames }}</span>
-```
-
-```js
-new Vue({
-  el: '...',
-  data: {
-    checkedNames: []
-  }
-})
-```
-
-#### ラジオ
-
-```html
-<input type="radio" id="one" value="One" v-model="picked">
-<label for="one">One</label>
-<br>
-<input type="radio" id="two" value="Two" v-model="picked">
-<label for="two">Two</label>
-<br>
-<span>Picked: {{ picked }}</span>
-```
-
-#### 選択
-
-```html
-<!-- 単体の場合 -->
-<select v-model="selected">
-  <option disabled value="">Please select one</option>
-  <option>A</option>
-  <option>B</option>
-  <option>C</option>
-</select>
-<span>Selected: {{ selected }}</span>
-```
-
-```js
-new Vue({
-  el: '...',
-  data: {
-    selected: ''
-  }
-})
-```
-
-```html
-<!-- 複数の場合(配列) -->
-<select v-model="selected" multiple>
-  <option>A</option>
-  <option>B</option>
-  <option>C</option>
-</select>
-<br>
-<span>Selected: {{ selected }}</span>
-```
-
-```html
-<!-- 動的オプション -->
-<select v-model="selected">
-  <option v-for="option in options" v-bind:value="option.value">
-    {{ option.text }}
-  </option>
-</select>
-<span>Selected: {{ selected }}</span>
-```
-
-```js
-new Vue({
-  el: '...',
-  data: {
-    selected: 'A',
-    options: [
-      { text: 'One', value: 'A' },
-      { text: 'Two', value: 'B' },
-      { text: 'Three', value: 'C' }
-    ]
-  }
-})
-```
+* `v-model` ディレクティブ
+  * form 要素( `input` , `textarea` , `select` )に双方向(two-way)データバインディングを作成する
+  * 内部的に input 要素に応じて異なるプロパティを使用し、異なるイベントを `emit` する  
 
 ### 値のバインディング(v-bind)
 
-* `v-bind` を使用することで input 値に文字列(チェックボックスなら boolean)以外の値を束縛することができるようになる。
+* `v-bind` ディレクティブ
+  * input 値に文字列(チェックボックスなら boolean)以外の値を束縛することができるようになる
 
-```html
-<!-- 通常の例 -->
-
-<!-- チェックされたとき、`picked` は文字列"a"になります -->
-<input type="radio" v-model="picked" value="a">
-
-<!-- `toggle` は true かまたは false のどちらかです -->
-<input type="checkbox" v-model="toggle">
-
-<!-- 最初のオプションが選択されたとき、`selected` は文字列"abc"です -->
-<select v-model="selected">
-  <option value="abc">ABC</option>
-</select>
-```
-
-```html
-<!-- input値に文字列以外の値を束縛する例 -->
-
-<input type="radio" v-model="pick" v-bind:value="a">
-<!--
-// チェックしたとき:
-vm.pick === vm.a
--->
-
-<input
-  type="checkbox"
-  v-model="toggle"
-  true-value="yes"
-  false-value="no"
->
-<!--
-// チェックされたとき:
-vm.toggle === 'yes'
-// チェックが外されたとき:
-vm.toggle === 'no'
--->
-
-<select v-model="selected">
-<!-- インラインオブジェクトリテラル -->
-  <option v-bind:value="{ number: 123 }">123</option>
-</select>
-<!--
-// 選択したとき:
-typeof vm.selected // => 'object'
-vm.selected.number // => 123
--->
-```
 
 ## コンポーネントの基本
 
