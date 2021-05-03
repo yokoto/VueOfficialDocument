@@ -147,7 +147,7 @@ Root Instance
 
 ### データとメソッド
 
-* `data` プロパティ
+* `data` 
   * `data` で見つけられる全てのプロパティは、Vue のリアクティブシステムに追加される。
   * `data` のプロパティが変更されると、ビューは反応(react)し、再レンダリングされる。
   * `data` のプロパティは、インスタンス作成時に存在した場合にのみリアクティブである。 = 何らかの初期値が必要。
@@ -180,8 +180,107 @@ Vue.createApp({
 
 <img width="501" alt="スクリーンショット 2021-05-03 18 52 37" src="https://user-images.githubusercontent.com/6859224/116863120-c5b83400-ac40-11eb-9a7a-3114ba13a04f.png">
 
-
 ## テンプレート構文
+
+### 展開
+
+* 二重中括弧の mustaches
+  * データを HTML ではなく、プレーンなテキストとして扱う。
+
+```html
+<p>Using mustaches: {{ rawHtml }}</p>
+<p>Using v-html directive: <span v-html="rawHtml"></span></p>
+```
+
+```js
+const RenderHtmlApp = {
+  data() {
+    return {
+      rawHtml: '<span style="color: red">This should be red.</span>'
+    }
+  }
+}
+
+Vue.createApp(RenderHtmlApp).mount('#example1')
+```
+
+### ディレクティブ
+
+#### 引数
+
+* ディレクティブ名の後にコロンで表記することで、引数を取ることができる。
+
+```html
+<!-- url の値を、要素の href 属性へバインドする -->
+<a v-bind:href="url">...</a>
+```
+
+### 省略記法
+
+#### v-bind
+
+```html
+<a v-bind:href="url">...</a>
+
+<a :href="url">...</a>
+
+<!-- 動的引数の省略記法 -->
+<a :[key]="url">...</a>
+```
+
+#### v-on
+
+```html
+<a v-on:click="doSomething">...</a>
+
+<a @click="doSomething">...</a>
+
+<!-- 動的引数の省略記法 -->
+<a @[event]="doSomething">...</a>
+```
+
+## データプロパティとメソッド
+
+### データプロパティ
+
+* `data` オプション
+  * `data` は、新しいコンポーネントのインスタンスを作成する際に呼び出される関数。
+  * Vue は `data` が返したオブジェクトをリアクティブシステムでラップして、コンポーネントのインスタンスに `$data` として格納する。
+  * 便宜上、 `data` が返したオブジェクトのトップレベルのプロパティは、コンポーネントのインスタンスを介して直接公開される。
+
+### メソッド
+
+* `methods` オプション
+  * コンポーネントのインスタンスにメソッドを追加する。
+  * `methods` は、必要なメソッドを含むオブジェクトでなければならない。
+  * コンポーネントのテンプレート内からアクセスでき、よくイベントリスナとして使われる。
+
+```html
+<button @click="increment">Up vote</button>
+```
+
+```js
+const app = Vue.createApp({
+  data() {
+    return { count: 4 }
+  },
+  methods: {
+    increment() {
+      // `this` はコンポーネントインスタンスを参照
+      this.count++
+    }
+  }
+})
+
+const vm = app.mount('#app')
+
+console.log(vm.count) // => 4
+
+vm.increment()
+
+console.log(vm.count) // => 5
+```
+
 
 ## 算出プロパティとウォッチャ
 
