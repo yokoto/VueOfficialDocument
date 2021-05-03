@@ -1,5 +1,77 @@
 # 基本的な使い方
 
+
+## はじめに
+
+### Vue.js とは？
+
+* ユーザーインターフェイスを構築するためのプログレッシブフレームワーク。
+* モノリシックなフレームワークとは異なり、Vueは少しずつ適用していけるよう設計されている。
+
+### 宣言的レンダリング
+
+* Vue.js のコアは、単純なテンプレート構文を使って宣言的にDOMにレンダリングすることを可能にするシステム。
+* 要素の属性を束縛（バインディング）することもできる。
+ * `v-bind` 属性はディレクティブと呼ばれる。
+  * ディレクティブは Vue によって提供された特別な属性であることを示すために `v-` 接頭辞がついている。
+  * レンダリングされたDOMに特定のリアクティブな振る舞いを与える。
+
+```html
+<div id="bind-attribute">
+  <!-- この要素の title 属性を、現在アクティブなインスタンスにおける message プロパティの最新状態に維持する -->
+  <span v-bind:title="message">
+    Hover your mouse over me for a few seconds to see my dynamically bound title!
+  </span>
+</div>
+```
+
+```js
+const AttributeBinding = {
+  data() {
+    return {
+      message: 'You loaded this page on ' + new Date().toLocaleString()
+    }
+  }
+}
+
+Vue.createApp(AttributeBinding).mount('#bind-attribute')
+```
+
+### ユーザー入力の制御
+
+* `v-on` ディレクティブを使ってイベントリスナをアタッチし、インスタンスのメソッドを呼び出すことができる。
+
+```html
+<div id="event-handling">
+  <p>{{ message }}</p>
+  <button v-on:click="reverseMessage">Reverse Message</button>
+</div>
+```
+
+```js
+const EventHandling = {
+  data() {
+    return {
+      message: 'Hello Vue.js!'
+    }
+  },
+  methods: {
+    reverseMessage() {
+      this.message = this.message
+        .split('')
+        .reverse()
+        .join('')
+    }
+  }
+}
+
+Vue.createApp(EventHandling).mount('#event-handling')
+```
+
+## クラスとスタイルのバインディング
+
+
+
 ## フォーム入力バインディング
 
 ### 基本的な使い方(v-model)
@@ -265,3 +337,19 @@ methods: {
   }
 }
 ```
+
+#### コンポーネントでv-modelを使う
+
+カスタムイベントは `v-model` で動作するカスタム入力を作成することもできる。
+
+```html
+<!-- 以下の例は同じことをしている -->
+<input v-model="searchText">
+
+<input
+  v-bind:value="searchText"
+  v-on:input="searchText = $event.target.value"
+>
+```
+
+
