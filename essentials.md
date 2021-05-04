@@ -547,6 +547,33 @@ app.mount('#todo-list-example')
 
 ## 9. コンポーネントの基本
 
+### プロパティを用いた親コンポーネントから子コンポーネントへのデータの受け渡し(props)
+
+* ブログ投稿用のコンポーネントで、表示する特定の投稿のタイトルや内容のようなデータを、作成したコンポーネントに渡したいような場合、プロパティが役立つ。
+* `props`
+  * コンポーネントに登録できるカスタム属性。
+  * 値がプロパティに渡されると、そのコンポーネントインスタンスのプロパティになる。
+  * プロパティの値は、他のコンポーネントのプロパティと同じように、テンプレート内でアクセスができる。
+
+```html
+<div id="blog-post-demo" class="demo">
+ <blog-post title="My journey with Vue"></blog-post>
+ <blog-post title="Blogging with Vue"></blog-post>
+ <blog-post title="Why Vue is so fun"></blog-post>
+</div>
+```
+
+```js
+const app = Vue.createApp({})
+
+app.component('blog-post', {
+  props: ['title'],
+  template: `<h4>{{ title }}</h4>`
+})
+
+app.mount('#blog-post-demo')
+```
+
 ### 親コンポーネントで子コンポーネントのイベントを購読する($emit)
 
 * 親コンポーネントでは `v-on` を使って子コンポーネントで起きた任意のイベントを購読することができ、  
@@ -555,7 +582,6 @@ app.mount('#todo-list-example')
 ※ `emit` する、とは、 「イベントをディスパッチした(発生させた)時に、イベントをリッスン（登録)しているコールバック関数(イベントリスナー)を呼び出すこと」 参照: https://jsprimer.net/use-case/todoapp/event-model/#event-emitter
 
 例: ブログ記事の文字の文字を拡大する機能の実装。
-
 
 ```html
 # blog_posts/index.html
@@ -647,4 +673,24 @@ methods: {
 >
 ```
 
+#### スロットによるコンテンツ配信
 
+コンポーネントに要素を渡したいとき、 Vue のカスタム `<slot>` 要素を使えばよい。
+
+```html
+<alert-box>
+  Something bad happened.
+</alert-box>
+```
+
+```js
+app.component('alert-box', {
+  template: `
+    <div class="demo-alert-box">
+      // Error! Something bad happened. と表示される。
+      <strong>Error!</strong>
+      <slot></slot>
+    </div>
+  `
+})
+```
