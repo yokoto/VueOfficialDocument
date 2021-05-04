@@ -197,8 +197,58 @@ app.component('blog-post', {
 ```
 
 ## 2. プロパティでない属性
+
+* プロパティでない属性
+  * `props` や `emits` で定義されたものを除いたもの
+  * `class` 、 `style` 、 `id` などの属性
+  * `$attrs` プロパティでアクセスできる。
+
 ## 3. カスタムイベント
+
+* 子コンポーネントから発行すると、親コンポーネントでリスナを追加できるようになる。
+
+```html
+<my-component @my-event="doSomething"></my-component>
+```
+
+```js
+this.$emit('myEvent')
+```
+
 ## 4. スロット
+
+* 親となるコンポーネント側から、子のコンポーネントのテンプレートの一部を差し込む機能。
+* 親側でスロットコンテンツが定義されていた場合は、 `<slot>` タグで囲まれたコンポーネント側のコンテンツは表示されず、親側のスロットコンテンツが表示される。
+
+```html
+<!-- myCom.vue -->
+<template>
+  <div class="mycom">
+    <!-- name: 未来太郎 と出力される -->
+    <p>name: <slot>Mirai Taro</slot></p>
+  </div>
+</template>
+<style></style>
+```
+
+```html
+<!-- About.vue -->
+<template>
+  <div class="home">
+    <MyCom>未来太郎</MyCom>
+  </div>
+</template>
+<script>
+  import MyCom from '../components/MyCom.vue'
+  export default {
+    components: {
+      MyCom
+    }
+  }
+</script>
+```
+https://future-architect.github.io/articles/20200428/
+
 ## 5. Provide / Inject
 ## 6. 動的 & 非同期コンポーネント
 ## 7. テンプレート参照について
