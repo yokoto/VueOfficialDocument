@@ -288,6 +288,7 @@ console.log(vm.count) // => 5
 * 算出プロパティはリアクティブな依存関係に基づいてキャッシュされる。
   * リアクティブな依存関係の一部が変更された場合にのみ再評価される。
 * メソッドは、再レンダリングが起こるたびに常に関数を実行する。
+* https://stackoverflow.com/questions/44350862/method-vs-computed-in-vue
 
 ### 算出 Setter 関数
 
