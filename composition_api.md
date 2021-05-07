@@ -40,7 +40,56 @@ setup (props) {
 
 #### ref によるリアクティブな変数
 
+* `ref` 
+  * 引数を受け取って、それを `value` プロパティを持つオブジェクトでラップして返す。
+    * オブジェクト内で値をラップすることで、異なるデータ型の間で動作を統一し、途中でリアクティブでなくなることがなくなる。
+    * 値へのリアクティブな参照を作成する。
+
+```js
+// src/components/UserRepositories.vue `setup` 関数
+import { fetchUserRepositories } from '@/api/repositories'
+import { ref } from 'vue'
+
+// コンポーネント内部
+setup (props) {
+  const repositories = ref([])  // { value: [] }
+  const getUserRepositories = async () => {
+    repositories.value = await fetchUserRepositories(props.user)
+  }
+
+  return {
+    repositories,
+    getUserRepositories
+  }
+}
+```
+
 #### ライフサイクルフックを setup の中に登録する
+
+* Composition API におけるライフサイクルフック
+  * `setup` の中に登録する
+  * `on` というプレフィックスが付いている。例: `mounted` -> `onMounted`
+
+```js
+// src/components/UserRepositories.vue `setup` function
+import { fetchUserRepositories } from '@/api/repositories'
+import { ref, onMounted } from 'vue'
+
+// コンポーネント内部
+setup (props) {
+  const repositories = ref([])
+  const getUserRepositories = async () => {
+    repositories.value = await fetchUserRepositories(props.user)
+  }
+
+  onMounted(getUserRepositories) // `mounted` が `getUserRepositories` を呼び出します
+
+  return {
+    repositories,
+    getUserRepositories
+  }
+}
+```
 
 #### watch で変化に反応する
 
