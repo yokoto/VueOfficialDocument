@@ -317,6 +317,8 @@ computed: {
 
 * `watch` オブション
   * データを変更するのに応じて非同期処理や重い処理を実行したい場合に最も便利。
+  * https://v3.ja.vuejs.org/api/options-data.html#watch
+    * キーが監視する式、値がそれに一致するコールバックであるオブジェクトか、メソッド名の文字列か、追加のオプションを含むオブジェクト。
 
 ```html
 <div id="watch-example">
