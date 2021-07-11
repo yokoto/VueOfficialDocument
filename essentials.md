@@ -178,6 +178,25 @@ Vue.createApp({
 
 ### ライフサイクルダイアグラム
 
+#### created
+
+* Viewインスタンスで使用する初期データを外部から取得する
+* `setInterval` や `setTimeout` をを使用して定期的に実行したいタイマー処理を開始する
+
+#### mounted
+
+* テンプレートから生成されたDOMの操作
+* イベントリスナの登録
+
+##### リンク
+
+* https://uyamazak.hatenablog.com/entry/2018/05/21/135729
+
+#### beforeDestroy
+
+* イベントリスナの破棄
+* タイマー処理のクリア
+
 <img width="501" alt="スクリーンショット 2021-05-03 18 52 37" src="https://user-images.githubusercontent.com/6859224/116863120-c5b83400-ac40-11eb-9a7a-3114ba13a04f.png">
 
 ## 2. テンプレート構文
